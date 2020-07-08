@@ -16,6 +16,7 @@ class Monitor:
     def statistics(self, debug=False):
         stats = {
             "cpu": "cpu",
+            "disks": "_disks",
             "memory": "memory",
             "uptime": "uptime",
             "swap": "swap_memory",
@@ -32,6 +33,30 @@ class Monitor:
         
         self.__requests.send(stats)
         return stats
+
+    def _disks(self):
+        disks = []
+        disk_info = psutil.disk_partitions()
+        
+        for disk in disk_info:
+            if disk.fstype in self.__disks:
+                continue
+            
+            try:
+                disk_usage = psutil.disk_usage(disk.mountpoint)
+            except:
+                pass
+            else:
+                disks.append({
+                    "name": disk.device,
+                    "type": disk.fstype,
+                    "mount_point": disk.mountpoint,
+                    "used_size": bytes_to_human(disk_usage.used),
+                    "total_size": bytes_to_human(disk_usage.total),
+                    "percent_used": bytes_to_human(disk_usage.percent)
+                })
+
+        return disks
 
     @staticmethod
     def memory():
