@@ -64,9 +64,9 @@ class Monitor:
                     "name": disk.device,
                     "type": disk.fstype,
                     "mount_point": disk.mountpoint,
+                    "percent_used": disk_usage.percent,
                     "used_size": bytes_to_human(disk_usage.used),
                     "total_size": bytes_to_human(disk_usage.total),
-                    "percent_used": bytes_to_human(disk_usage.percent)
                 })
 
         return disks
