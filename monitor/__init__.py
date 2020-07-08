@@ -18,8 +18,8 @@ NIC = {
 
 class Monitor:
     def __init__(self, arguments):
-        self.__disks = arguments.disks
-        self.__server_name = arguments.name
+        self.__disks = arguments["disks"]
+        self.__server_name = arguments["name"]
         self.__requests = RequestsManager(arguments)
 
     def statistics(self, debug=False):

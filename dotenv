@@ -1,0 +1,4 @@
+NAME=<Server Identifier>
+DISKS=<Exclude 1> <Exclude 2> ... <Exclude n>
+ATTEMPS=3
+URI=http://localhost/

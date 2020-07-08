@@ -6,8 +6,8 @@ from monitor.exceptions import MaxRequestAttempts
 
 class RequestsManager:
     def __init__(self, arguments):
-        self.__uri = arguments.uri
-        self.__attempts = arguments.attempts
+        self.__uri = arguments["uri"]
+        self.__attempts = arguments["attempts"]
 
     def send(self, stats):
         for attempt in range(self.__attempts):
