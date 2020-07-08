@@ -19,6 +19,7 @@ NIC = {
 class Monitor:
     def __init__(self, arguments):
         self.__disks = arguments.disks
+        self.__server_name = arguments.name
         self.__requests = RequestsManager(arguments)
 
     def statistics(self, debug=False):
@@ -30,11 +31,14 @@ class Monitor:
             "network": "network",
             "swap": "swap_memory",
             "system": "system_data",
+            "bandwidth": "bandwidth",
             "timestamp": "current_time"
         }
         
         for key, fn in stats.items():
             stats[key] = getattr(self, fn)()
+
+        stats["server_name"] = self.__server_name
 
         if debug:
             self.print_debug(stats)
@@ -120,6 +124,23 @@ class Monitor:
             nics.append(nic)
 
         return nics
+
+    @staticmethod
+    def bandwidth():
+        # First in/out
+        first = psutil.net_io_counters()
+        
+        time.sleep(1)
+        
+        # Last in/out
+        last = psutil.net_io_counters()
+
+        # Current Speed
+        # Download/Upload speed in bytes per seconds.
+        return {
+            "upload": 0 if first[0] > last[0] else last[0] - first[0],
+            "download": 0 if first[1] > last[1] else last[1] - first[1]
+        }
 
     @staticmethod
     def system_data():
