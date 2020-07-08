@@ -8,6 +8,14 @@ from datetime import datetime
 from monitor.utils import bytes_to_human
 from monitor.requests_manager import RequestsManager
 
+NIC = {
+    "mac": "",
+    "name": "",
+    "address": "",
+    "netmask": "",
+    "address6": "",
+}
+
 class Monitor:
     def __init__(self, arguments):
         self.__disks = arguments.disks
@@ -19,6 +27,7 @@ class Monitor:
             "disks": "_disks",
             "memory": "memory",
             "uptime": "uptime",
+            "network": "network",
             "swap": "swap_memory",
             "system": "system_data",
             "timestamp": "current_time"
@@ -70,16 +79,14 @@ class Monitor:
 
     @staticmethod
     def cpu():
-        cpu_frequency = []
-        for freq in psutil.cpu_freq(percpu=True):
-            cpu_frequency.append({
-                "min": freq.min,
-                "max": freq.max,
-                "current": freq.current
-            })
+        cpu_freq = psutil.cpu_freq()
 
         return {
-            "cpu_frequency": cpu_frequency,
+            "cpu_frequency": {
+                "min": round(cpu_freq.min, 2),
+                "max": round(cpu_freq.max, 2),
+                "current": round(cpu_freq.current, 2)
+            },
             "cpu_count": psutil.cpu_count(),
             "cpu_usage": psutil.cpu_percent(interval=1),
         }
@@ -92,6 +99,27 @@ class Monitor:
             "swap_used": bytes_to_human(swap.used),
             "swap_total": bytes_to_human(swap.total),
         }
+
+    @staticmethod
+    def network():
+        nics = []
+        cards = psutil.net_if_addrs()
+        for name, snics in cards.items():
+            nic = NIC.copy()
+            
+            nic["name"] = name
+            for snic in snics:
+                if snic.family == -1:
+                    nic["mac"] = snic.address
+                elif snic.family == 2:
+                    nic["address"] = snic.address
+                    nic["netmask"] = snic.netmask
+                elif snic.family == 23:
+                    nic["address6"] = snic.address
+            
+            nics.append(nic)
+
+        return nics
 
     @staticmethod
     def system_data():
