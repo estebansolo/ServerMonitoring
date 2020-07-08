@@ -1,4 +1,3 @@
-import json
 import argparse
 from monitor import Monitor
 
@@ -16,10 +15,4 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     app = Monitor(args)
-    server_stats = app.statistics()
-    if args.debug:
-        print(
-            json.dumps(
-                server_stats, indent=4
-            )
-        )
+    app.statistics(args.debug)
